@@ -6,9 +6,10 @@ var morgan = require('morgan');             // log requests to the console (expr
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 
-// configuration =================
+// configuration ================= test db
 var url = 'mongodb://127.0.0.1:27017/test';
-//var url = 'mongodb://localhost/test';
+// this writes to db "local"
+//var url = 'mongodb://127.0.0.1:27017/local';
 
 
 //mongoose.connect('mongodb://node:nodeuser@mongo.onmodulus.net:27017/uwO3mypu');     // connect to mongoDB database on modulus.io
@@ -17,6 +18,7 @@ mongoose.connect(url, { useMongoClient: true });
 
 mongoose.connection.on('open', function(){
         for (var i in mongoose.connection.collections) {
+            console.log('starting collection ' + i + '===================');
             console.log(mongoose.connection.collections[i]);
         }
 });
@@ -32,7 +34,10 @@ app.use(methodOverride());
 var Todo = mongoose.model('Todo', {
     text : String
 });
-
+// when you create a model, it will automatically create a collection todo2
+var Todo2 = mongoose.model('Todo2', {
+    text : String
+});
 
 // routes ======================================================================
 
@@ -65,7 +70,6 @@ app.post('/api/todos', function(req, res) {
     }, function(err, todo) {
         if (err)
             res.send(err);
-        console.log('todos: ' + todos)    ;
         // get and return all the todos after you create another
         Todo.find(function(err, todos) {
             if (err)
@@ -73,6 +77,7 @@ app.post('/api/todos', function(req, res) {
             res.json(todos);
         });
     });
+
 
 });
 
